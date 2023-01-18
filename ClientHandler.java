@@ -2,9 +2,8 @@ import java.io.DataOutputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.net.Socket;
-import java.sql.Time;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.text.SimpleDateFormat; // for date format
+import java.util.Date; // for date parsing
 
 public class ClientHandler extends Thread {
 	private Socket socket;

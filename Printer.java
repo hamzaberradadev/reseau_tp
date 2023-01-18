@@ -1,3 +1,4 @@
+// this class is used to print colored text in the console
 public class Printer {
     private static final String ANSI_RESET = "\u001B[0m";
     private static final String ANSI_BLACK = "\u001B[30m";
