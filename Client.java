@@ -1,7 +1,14 @@
 import java.util.Scanner; // for the user input
 import java.util.regex.*; // for the ip and port address validation
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.Socket;
 
 public class Client {
@@ -12,12 +19,11 @@ public class Client {
 		String ip = inputObj.nextLine();
 		// validate the ip address
 		String regexZeroTo255 = "(\\d{1,2}|(0|1)\\d{2}|2[0-4]\\d|25[0-5])";
-		String regexIP = regexZeroTo255 + "\\." +regexZeroTo255 + "\\."+ regexZeroTo255 + "\\." + regexZeroTo255;
+		String regexIP = regexZeroTo255 + "\\." + regexZeroTo255 + "\\." + regexZeroTo255 + "\\." + regexZeroTo255;
 		if (!Pattern.matches(regexIP, ip)) {
 			Printer.print("\t Invalid IP address", "red");
 			return getIp(inputObj);
-		} 
-		else {
+		} else {
 			return ip;
 		}
 	};
@@ -30,16 +36,17 @@ public class Client {
 		if (!Pattern.matches(regexPort, port)) {
 			Printer.print("\t Invalid Port address", "red");
 			return getPort(inputObj);
-		} 
-		else {
+		} else {
 			return Integer.parseInt(port); // convert the string to integer should never throw an exception
 		}
 	}
-	private static String getCommande(Scanner inputObj){
+
+	private static String getCommande(Scanner inputObj) {
 		Printer.print("Enter commande:", "blue");
 		String commande = inputObj.nextLine();
 		return commande;
 	}
+
 	public static void main(String[] args) throws Exception {
 		Scanner inputObj = new Scanner(System.in);
 		String serverAddress = getIp(inputObj);
@@ -54,14 +61,56 @@ public class Client {
 		// PrintWriter out = new PrintWriter(os);
 		String commande = getCommande(inputObj);
 		while (!Pattern.matches("(exit)",commande )) try{
-			os.writeUTF(commande);
-			String response = in.readUTF();
-			Printer.print(response, "green");
+			// Show the command in the server console
+			if (commande.matches("mkdir ..*")) {
+				os.writeUTF(commande);
+				String response = in.readUTF();
+				Printer.print(response, "green");
+			} else if (commande.equals("ls")) {
+				os.writeUTF(commande);
+				String response = in.readUTF();
+				Printer.print(response, "green");
+			} else if (commande.matches("cd ..*")) {
+				os.writeUTF(commande);
+				String response = in.readUTF();
+				Printer.print(response, "green");
+			} else if (commande.matches("rmdir ..*")) {
+				os.writeUTF(commande);
+				String response = in.readUTF();
+				Printer.print(response, "green");
+			} else if (commande.matches("upload ..*")) {
+				// code to receive and save the file
+			} else if (commande.matches("download ..*")) {
+				os.writeUTF(commande);
+				String response = in.readUTF();
+				if (response.equals("200")) {
+					// code to receive and save the file
+					File file = new File(System.getProperty("user.dir")+"\\"+ in.readUTF());
+					System.out.println(file.getAbsolutePath());
+					long fileSize = in.readLong();
+					byte[] bytes = new byte[16 * 1024];
+                    try (OutputStream output = new FileOutputStream(file)) {
+						int totalCount = 0;
+                        int count = 0;
+                        while ((totalCount+=count) < fileSize && (count = in.read(bytes)) > 0 ) {
+                            output.write(bytes, 0, count);
+                        }
+                    }
+					Printer.print("File downloaded successfully", "green");
+				} else {
+					Printer.print(response, "red");
+				}
+			} else {
+				Printer.print("Invalid command", "red");
+			}
 			commande = getCommande(inputObj);
-		} catch (Exception e) {
-			Printer.print("Error: " + e.getMessage(), "red");
-		}
-		// keep the client alive
-		socket.close();
+
+		}catch(
+
+	Exception e)
+	{
+		Printer.print("Error: " + e.getMessage(), "red");
 	}
-}
+	// keep the client alive
+	socket.close();
+}}

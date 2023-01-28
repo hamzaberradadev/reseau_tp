@@ -50,7 +50,8 @@ public class ClientHandler extends Thread {
 				} else if (command.matches("upload ..*")) {
 					// code to receive and save the file
 				} else if (command.matches("download ..*")) {
-					// code to send the file to the client
+					String filePath = command.replace("download ", "");
+					s.download(filePath, out);
 				} else {
 					out.writeUTF("Invalid command");
 				}

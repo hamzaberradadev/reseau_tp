@@ -1,4 +1,7 @@
+import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 
 public class ClaudService {
     private String currentPath;
@@ -19,6 +22,10 @@ public class ClaudService {
 
     public String cd(String pth) {
         switch (pth) {
+            case "./":
+                break;
+            case ".":
+                break;
             case "..":
                 if (!this.currentPath.matches("(:C)")) {
                     this.currentDir = this.currentDir.getParentFile();
@@ -59,7 +66,28 @@ public class ClaudService {
     public String upload(String pth) {
         return "Not implemented yet";
     }
-    public String download(String pth) {
-        return "Not implemented yet";
+    public String download(String fileName, DataOutputStream out) {
+        if (fileName != null) {
+            File file = new File(currentDir.getAbsolutePath() + "\\" + fileName);
+            if (file.exists()) {
+                try {
+                    out.writeUTF("200");
+                    out.writeUTF(file.getName());
+                    out.writeLong(file.length());
+                    byte[] bytes = new byte[16 * 1024];
+                    try (InputStream in = new FileInputStream(file)) {
+                        int count;
+                        while ((count = in.read(bytes)) > 0) {
+                            out.write(bytes, 0, count);
+                        }
+                    }
+                    return "File found";
+                } catch (Exception e) {
+                    return "Error sending file";
+                }
+            }
+            return "File not found";
+        }
+        return "File not found";
     }
 }
