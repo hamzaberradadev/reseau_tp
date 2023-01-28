@@ -8,7 +8,7 @@ public class Server {
 
 
 	private static String getIp(Scanner inputObj) {
-    Printer.print("Enter the IP address of the server:", "blue");
+    Printer.print("Enter the Adresse IPv4 of this machine :", "blue");
     String ip = inputObj.nextLine();
     // validate the ip address
     String regexZeroTo255 = "(\\d{1,2}|(0|1)\\d{2}|2[0-4]\\d|25[0-5])";
@@ -22,7 +22,7 @@ public class Server {
     }
   };
   private static Integer getPort(Scanner inputObj) {
-    Printer.print("Enter the port number of the server between 5000 and 5050:", "blue");
+    Printer.print("Enter the port number to open between 5000 and 5050:", "blue");
     String port = inputObj.nextLine();
     // validate the Port address
     String regexPort = "((50[0-4][0-9])|(5050))";

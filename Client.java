@@ -8,7 +8,7 @@ public class Client {
 	private static Socket socket;
 
 	private static String getIp(Scanner inputObj) {
-		Printer.print("Enter the IP address of the server:", "blue");
+		Printer.print("Enter the IPv4 of the server:", "blue");
 		String ip = inputObj.nextLine();
 		// validate the ip address
 		String regexZeroTo255 = "(\\d{1,2}|(0|1)\\d{2}|2[0-4]\\d|25[0-5])";
