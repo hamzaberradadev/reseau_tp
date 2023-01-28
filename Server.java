@@ -1,12 +1,44 @@
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
+import java.util.Scanner;
+import java.util.regex.Pattern;
 public class Server {
 	private static ServerSocket Listener;
+
+
+	private static String getIp(Scanner inputObj) {
+    Printer.print("Enter the IP address of the server:", "blue");
+    String ip = inputObj.nextLine();
+    // validate the ip address
+    String regexZeroTo255 = "(\\d{1,2}|(0|1)\\d{2}|2[0-4]\\d|25[0-5])";
+    String regexIP = regexZeroTo255 + "\\." +regexZeroTo255 + "\\."+ regexZeroTo255 + "\\." + regexZeroTo255;
+    if (!Pattern.matches(regexIP, ip)) {
+      Printer.print("\t Invalid IP address", "red");
+      return getIp(inputObj);
+    } 
+    else {
+      return ip;
+    }
+  };
+  private static Integer getPort(Scanner inputObj) {
+    Printer.print("Enter the port number of the server between 5000 and 5050:", "blue");
+    String port = inputObj.nextLine();
+    // validate the Port address
+    String regexPort = "((50[0-4][0-9])|(5050))";
+    if (!Pattern.matches(regexPort, port)) {
+      Printer.print("\t Invalid Port address", "red");
+      return getPort(inputObj);
+    } 
+    else {
+      return Integer.parseInt(port); // convert the string to integer should never throw an exception
+    }
+  }
 	public static void main(String[] args) throws Exception {
+		Scanner inputObj = new Scanner(System.in);
 		int clientNumber = 0;
-		String serverAddress = "127.0.0.1";
-		int serverPort = 5000;
+		String serverAddress =getIp(inputObj);
+		int serverPort = getPort(inputObj);
 	Listener = new ServerSocket();
 	Listener.setReuseAddress(true);
 	InetAddress serverIP = InetAddress.getByName(serverAddress);
