@@ -79,7 +79,27 @@ public class Client {
 				String response = in.readUTF();
 				Printer.print(response, "green");
 			} else if (commande.matches("upload ..*")) {
-				// code to receive and save the file
+				File file = new File(commande.split(" ")[1]);
+				if (file.exists()) {
+					os.writeUTF(commande);
+					String response = in.readUTF();
+					if (response.equals("200")) {
+						os.writeUTF(file.getName());
+						os.writeLong(file.length());
+						byte[] bytes = new byte[16 * 1024];
+						try (InputStream input = new FileInputStream(file)) {
+							int count;
+							while ((count = input.read(bytes)) > 0) {
+								os.write(bytes, 0, count);
+							}
+						}
+						Printer.print("File uploaded successfully", "green");
+					} else {
+						Printer.print("Server not able to accepte this request", "red");
+					}
+				} else {
+					Printer.print("File not found", "red");
+				}
 			} else if (commande.matches("download ..*")) {
 				os.writeUTF(commande);
 				String response = in.readUTF();

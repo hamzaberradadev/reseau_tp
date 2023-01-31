@@ -47,8 +47,8 @@ public class ClientHandler extends Thread {
 				} else if (command.matches("rmdir ..*")) {
 					String dirName = command.replace("rmdir ", "");
 					out.writeUTF(s.rmdir(dirName));
-				} else if (command.matches("upload ..*")) {
-					// code to receive and save the file
+				} else if (command.matches("upload")) {
+					out.writeUTF(s.upload(in, out));
 				} else if (command.matches("download ..*")) {
 					String filePath = command.replace("download ", "");
 					s.download(filePath, out);

@@ -1,6 +1,9 @@
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 
 public class ClaudService {
@@ -63,8 +66,22 @@ public class ClaudService {
         return "Directory does not exist";
     }
 
-    public String upload(String pth) {
-        return "Not implemented yet";
+    public String upload(DataInputStream in, DataOutputStream out) throws IOException {
+        String fileName = in.readUTF();
+        long fileLength = in.readLong();
+        File file = new File(currentDir.getAbsolutePath() + "\\" + fileName);
+        try (DataOutputStream fileOut = new DataOutputStream(new FileOutputStream(file))) {
+            byte[] bytes = new byte[16 * 1024];
+            int count;
+            out.writeUTF("200");
+            while (fileLength > 0 && (count = in.read(bytes, 0, (int) Math.min(bytes.length, fileLength))) > 0) {
+                fileOut.write(bytes, 0, count);
+                fileLength -= count;
+            }
+            return "File uploaded successfully";
+        } catch (Exception e) {
+            return "Error uploading file";
+        }
     }
     public String download(String fileName, DataOutputStream out) {
         if (fileName != null) {
