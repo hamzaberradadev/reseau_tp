@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.Socket;
 
 public class ClaudService {
     private String currentPath;
@@ -66,14 +67,17 @@ public class ClaudService {
         return "Directory does not exist";
     }
 
-    public String upload(DataInputStream in, DataOutputStream out) throws IOException {
+    public String upload(DataInputStream in, DataOutputStream out, Socket socket) throws IOException {
         String fileName = in.readUTF();
         long fileLength = in.readLong();
         File file = new File(currentDir.getAbsolutePath() + "\\" + fileName);
         try (DataOutputStream fileOut = new DataOutputStream(new FileOutputStream(file))) {
-            byte[] bytes = new byte[16 * 1024];
-            int count;
             out.writeUTF("200");
+
+            int maxSize = (int) Math.min(fileLength, Integer.MAX_VALUE);
+            byte[] bytes = new byte[maxSize];
+
+            int count;
             while (fileLength > 0 && (count = in.read(bytes, 0, (int) Math.min(bytes.length, fileLength))) > 0) {
                 fileOut.write(bytes, 0, count);
                 fileLength -= count;
@@ -83,7 +87,7 @@ public class ClaudService {
             return "Error uploading file";
         }
     }
-    public String download(String fileName, DataOutputStream out) {
+    public String download(String fileName, DataOutputStream out, Socket socket) {
         if (fileName != null) {
             File file = new File(currentDir.getAbsolutePath() + "\\" + fileName);
             if (file.exists()) {
@@ -91,7 +95,10 @@ public class ClaudService {
                     out.writeUTF("200");
                     out.writeUTF(file.getName());
                     out.writeLong(file.length());
-                    byte[] bytes = new byte[16 * 1024];
+
+                    int maxSize = (int) Math.min(file.length(), Integer.MAX_VALUE);
+                    byte[] bytes = new byte[maxSize];
+
                     try (InputStream in = new FileInputStream(file)) {
                         int count;
                         while ((count = in.read(bytes)) > 0) {

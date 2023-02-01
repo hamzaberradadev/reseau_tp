@@ -28,7 +28,6 @@ public class ClientHandler extends Thread {
 	public void run() {
 		try {
 			DataOutputStream out = new DataOutputStream(socket.getOutputStream());
-			out.writeUTF("Hello from server - you are client#" + clientNumber);
 			DataInputStream in = new DataInputStream(socket.getInputStream());
 			ClaudService s = new ClaudService();
 
@@ -48,10 +47,10 @@ public class ClientHandler extends Thread {
 					String dirName = command.replace("rmdir ", "");
 					out.writeUTF(s.rmdir(dirName));
 				} else if (command.matches("upload")) {
-					out.writeUTF(s.upload(in, out));
+					out.writeUTF(s.upload(in, out, socket));
 				} else if (command.matches("download ..*")) {
 					String filePath = command.replace("download ", "");
-					s.download(filePath, out);
+					out.writeUTF(s.download(filePath, out, socket));
 				} else {
 					out.writeUTF("Invalid command");
 				}
