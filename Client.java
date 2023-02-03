@@ -134,8 +134,10 @@ public class Client {
 
 				try (InputStream input = new FileInputStream(file)) {
 					int count;
-					while ((count = input.read(bytes)) > 0) {
+					long total = 0;
+					while ((count = input.read(bytes)) > 0 && total < file.length()) {
 						os.write(bytes, 0, count);
+						total += count;
 					}
 				}
 

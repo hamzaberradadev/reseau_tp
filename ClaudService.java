@@ -78,7 +78,7 @@ public class ClaudService {
             byte[] bytes = new byte[maxSize];
 
             int count;
-            while (fileLength > 0 && (count = in.read(bytes, 0, (int) Math.min(bytes.length, fileLength))) > 0) {
+            while (fileLength > 0 && (count = in.read(bytes, 0, maxSize)) > 0) {
                 fileOut.write(bytes, 0, count);
                 fileLength -= count;
             }
@@ -101,8 +101,10 @@ public class ClaudService {
 
                     try (InputStream in = new FileInputStream(file)) {
                         int count;
-                        while ((count = in.read(bytes)) > 0) {
+                        int total = 0;
+                        while ((count = in.read(bytes)) > 0 && total < file.length()) {
                             out.write(bytes, 0, count);
+                            total += count;
                         }
                     }
                     return "File found";
